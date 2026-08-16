@@ -1,5 +1,7 @@
 # evidence-redaction-gate
 
+[![tests](https://github.com/kubakozub/evidence-redaction-gate/actions/workflows/tests.yml/badge.svg)](https://github.com/kubakozub/evidence-redaction-gate/actions/workflows/tests.yml)
+
 A fail-closed, offline gate that refuses to let secrets and personal data leave
 your machine inside security-research evidence.
 
