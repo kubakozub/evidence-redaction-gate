@@ -88,7 +88,7 @@ POSITIVE = [
 ]
 
 # A HAR expanded by pretty-printing: name and value on SEPARATE lines.
-# A purely line-by-line detector is blind to this — hence scan_lines().
+# A purely line-by-line detector is blind to this, hence scan_lines().
 MULTILINE_HAR = [
     "        {",
     '          "name": "Cookie",',
@@ -96,7 +96,7 @@ MULTILINE_HAR = [
     "        },",
 ]
 
-# CLEAN content — the gate has no right to stop it. A false alarm on clean
+# CLEAN content: the gate has no right to stop it. A false alarm on clean
 # evidence is costly, because it teaches the operator to ignore the result.
 NEGATIVE = [
     ("redacted header", "Cookie: <REDACTED>"),
@@ -112,7 +112,7 @@ NEGATIVE = [
     ("task identifier", "Checked the session cookie in test case 009 without recording a value."),
     ("empty header", "Cookie:"),
     ("lifetime description", "The token expired after 3600 seconds; no value was recorded."),
-    # False alarms found by adversarial testing — all arise from CORRECTLY
+    # False alarms found by adversarial testing, all arise from CORRECTLY
     # redacted evidence.
     ("scheme without a value", "Authorization: Bearer [REDACTED]"),
     ("scheme without a value in JSON", '    "authorization": "Bearer [REDACTED]"'),

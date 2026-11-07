@@ -4,20 +4,20 @@
 This module exists because two separate gates in one research workflow each
 carried their own copy of the patterns, and the copies silently drifted apart.
 A measurement settled it: on a battery of 31 realistic secret shapes, one gate
-caught 9 and the other 13. Making this module the single source of patterns —
-imported by every gate — is what stops the drift from coming back.
+caught 9 and the other 13. Making this module the single source of patterns,
+imported by every gate, is what stops the drift from coming back.
 
 Design premise: this is a GATE, not a classifier. A false positive costs a
 minute of looking at a line; a false negative leaks a session cookie into an
 archive that leaves your machine. So the detector leans towards firing. But a
 false alarm on correctly redacted evidence is treated as its own bug, because
-it teaches the operator to ignore the result — which is worse than no gate.
+it teaches the operator to ignore the result, which is worse than no gate.
 
 Matching is by SHAPE wherever possible rather than by name: a cookie-name
 dictionary is always a step behind reality, but the structure of a HAR entry,
 the meaning of `curl -b`, and the `System.Net.Cookie(...)` constructor are not.
 
-KNOWN LIMITS — stated rather than hidden:
+KNOWN LIMITS, stated rather than hidden:
   * A secret split across sentences by the author, additionally encoded, or
     sitting in a screenshot is out of reach for any lexical detector.
   * Secrets shorter than ~16 characters are below the value threshold and will
@@ -75,7 +75,7 @@ def name_is_exact(name: str) -> bool:
 
 
 def name_is_sensitive(name: str) -> bool:
-    """Looser match — callers must additionally require a strong value."""
+    """Looser match: callers must additionally require a strong value."""
     if name_is_exact(name):
         return True
     norm = normalize_name(name)
@@ -101,7 +101,7 @@ _EMPTYISH = re.compile(r"^[\s_*.\-]*$|^x{3,}$|^\*{3,}$", re.I)
 _PLACEHOLDER_USER = re.compile(r"^(?:your|twoj|twoje)[_-][A-Za-z0-9_-]+$", re.I)
 
 # An authentication scheme is not a value. Without this, the canonical output of
-# every header redactor — "Authorization: Bearer [REDACTED]" — blocked exports,
+# every header redactor, "Authorization: Bearer [REDACTED]", blocked exports,
 # because the word "Bearer" itself was being read as the value.
 _AUTH_SCHEME = re.compile(
     r"^(?:Bearer|Basic|Digest|Token|Negotiate|MAC|Hawk|AWS4-HMAC-SHA256)\s*", re.I
@@ -206,7 +206,7 @@ HAR_VALUE_FIRST_RE = re.compile(
     r"\"value\"\s*:\s*\"(?P<value>[^\"]*)\"\s*,\s*\"name\"\s*:\s*\"(?P<name>[^\"]{1,64})\"", re.I
 )
 # A cookie object in a HAR: there "name" is the COOKIE's name, not a header's,
-# so a name dictionary cannot help — recognise it by the neighbouring fields.
+# so a name dictionary cannot help: recognise it by the neighbouring fields.
 HAR_COOKIE_OBJ_RE = re.compile(
     r"\"name\"\s*:\s*\"[^\"]{1,64}\"\s*,\s*\"value\"\s*:\s*\"(?P<value>[^\"]*)\""
     r"(?=[^\r\n]*\"(?:path|domain|httpOnly|secure|expires)\")",
@@ -233,7 +233,7 @@ QUERY_ONLY_NAMES = frozenset({"code", "authcode", "ticket", "sig", "signature", 
 CLIENT_FLAG_RE = re.compile(
     r"(?:^|\s)(?:-b|-u|--cookie|--user|--oauth2-bearer)\s+[\"']?(?P<value>[^\"'\s]{8,})"
 )
-# DevTools "Copy as PowerShell" — name and value as positional arguments.
+# DevTools "Copy as PowerShell": name and value as positional arguments.
 PS_COOKIE_RE = re.compile(
     r"System\.Net\.Cookie\(\s*\"[^\"]{1,64}\"\s*,\s*\"(?P<value>[^\"]{8,})\""
 )
@@ -326,10 +326,10 @@ def _labelled_value_hit(line: str) -> str | None:
     if not names:
         return None
     tail = line.rsplit(":", 1)[1].strip().strip(_TRIM)
-    # A single token, not a phrase — "Cleanup: Revoke tokens." is prose.
+    # A single token, not a phrase: "Cleanup: Revoke tokens." is prose.
     if len(tail) < 8 or tail.split() != [tail] or is_redacted(tail):
         return None
-    # "name: X-API-Key" — the tail is a header name, not its value.
+    # "name: X-API-Key": the tail is a header name, not its value.
     if name_is_sensitive(tail):
         return None
     if _PATHISH.search(tail) or "://" in tail or _ISO_DATE.match(tail):
@@ -337,7 +337,7 @@ def _labelled_value_hit(line: str) -> str | None:
     if _DIGEST.match(tail) and _HASH_MARKER.search(line):
         return None
     # An ordinary single-case word is not a value. A secret has a digit, a
-    # separator, or mixed case — a passphrase "a-b-c-d" has separators.
+    # separator, or mixed case, a passphrase "a-b-c-d" has separators.
     if not (
         any(c.isdigit() for c in tail)
         or any(c in "-_.=+/" for c in tail)
@@ -423,7 +423,7 @@ def scan_lines(lines: Iterable[str]) -> Iterator[tuple[int, str]]:
     Why this exists: a HAR opened in an editor, or piped through `jq .` or
     `python -m json.tool`, breaks apart so that "name" and "value" land on
     SEPARATE lines. A purely line-by-line detector is blind to that by
-    construction — and it is the most common real-world shape of captured
+    construction, and it is the most common real-world shape of captured
     traffic.
     """
     pending_name: tuple[int, str] | None = None
